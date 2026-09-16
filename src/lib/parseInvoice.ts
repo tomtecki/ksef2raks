@@ -6,9 +6,10 @@ import type { Party, ParsedInvoice, RateAmount } from "../types";
 /** NIP-RRRRMMDD-XXXXXXXXXXXX-YY.xml, np. 5461390421-20260709-78CD7F40000F-4A.xml */
 const KSEF_FILENAME_RE = /^(\d{10}-\d{8}-[0-9A-Fa-f]{12}-[0-9A-Fa-f]{2})/;
 
-function err(id: number, file: string, message: string): ParsedInvoice {
+export function invoiceError(id: number, file: string, message: string): ParsedInvoice {
   return { id, file, ok: false, errors: [message], warnings: [] };
 }
+const err = invoiceError;
 
 /**
  * Parsuje pojedynczy plik faktury KSeF FA(3)/FA(2).

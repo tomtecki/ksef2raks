@@ -3,7 +3,7 @@ import FileDrop from "./components/FileDrop";
 import InvoiceTable from "./components/InvoiceTable";
 import ContractorsTable from "./components/ContractorsTable";
 import SettingsForm from "./components/SettingsForm";
-import { parseInvoice } from "./lib/parseInvoice";
+import { parseInvoice, invoiceError } from "./lib/parseInvoice";
 import { buildContractors } from "./lib/contractors";
 import { evaluateBatch, selectedForExport } from "./lib/validation";
 import { ourNipOf } from "./lib/invoiceHelpers";
@@ -11,10 +11,11 @@ import { buildRaks, encodeOutput, outputFileName } from "./lib/buildRaks";
 import { fmt } from "./lib/format";
 import { defaultRates, type RateInfo, type RateKey } from "./lib/rates";
 import { DEFAULT_SETTINGS, MODE_DEFAULTS, loadProfile, saveProfile } from "./lib/profiles";
+import { extractXmlFromZip } from "./lib/zip";
 import type { Contractor, ImportMode, ImportSettings, ParsedInvoice } from "./types";
 
-const APP_VERSION = "2.0";
-const APP_DATE = "2026-09-16";
+const APP_VERSION = "2.1";
+const APP_DATE = "2026-09-17";
 
 function download(name: string, data: Uint8Array | string) {
   const blob = new Blob([data as BlobPart], { type: "application/xml" });
@@ -65,9 +66,27 @@ export default function App() {
   }, [ourNip, mode]);
 
   async function handleFiles(fileList: FileList) {
-    const files = Array.from(fileList).filter((f) => /\.xml$/i.test(f.name));
+    const files = Array.from(fileList).filter((f) => /\.xml$/i.test(f.name) || /\.zip$/i.test(f.name));
     const parsed: ParsedInvoice[] = [];
     for (const f of files) {
+      if (/\.zip$/i.test(f.name)) {
+        try {
+          const entries = await extractXmlFromZip(f);
+          if (!entries.length) {
+            idCounter.current += 1;
+            parsed.push(invoiceError(idCounter.current, f.name, "Archiwum ZIP nie zawiera plików .xml"));
+            continue;
+          }
+          for (const entry of entries) {
+            idCounter.current += 1;
+            parsed.push(parseInvoice(idCounter.current, entry.name, entry.text, ratesRef.current));
+          }
+        } catch (e) {
+          idCounter.current += 1;
+          parsed.push(invoiceError(idCounter.current, f.name, `Nie udało się odczytać archiwum ZIP: ${(e as Error).message}`));
+        }
+        continue;
+      }
       const text = await f.text();
       idCounter.current += 1;
       parsed.push(parseInvoice(idCounter.current, f.name, text, ratesRef.current));
@@ -153,22 +172,23 @@ export default function App() {
         </div>
 
         <section>
-          <h2>1. Pliki z KSeF</h2>
+          <h2><span className="step-badge">1</span>Pliki z KSeF</h2>
           <FileDrop onFiles={handleFiles} />
           <p className="hint">
             Numer KSeF nie jest zapisany wewnątrz pliku FA(3) – jest odczytywany z nazwy pliku (np.{" "}
             <span className="mono">5461206251-20260731-5FD9DD800000-58.xml</span>). Nie zmieniaj nazw plików pobranych z
-            KSeF.
+            KSeF. Można wgrać też archiwum <span className="mono">.zip</span> pobrane z KSeF (paczka po kilka/kilkanaście
+            faktur naraz) – zostanie rozpakowane w przeglądarce, bez zapisywania czegokolwiek na dysku.
           </p>
         </section>
 
         <section>
-          <h2>2. Faktury</h2>
+          <h2><span className="step-badge">2</span>Faktury</h2>
           <InvoiceTable invoices={invoices} mode={mode} evaluation={evaluation} rates={rates} onToggle={handleToggleInvoice} />
         </section>
 
         <section>
-          <h2>3. Kontrahenci (dane do kartoteki – można poprawić przed generowaniem)</h2>
+          <h2><span className="step-badge">3</span>Kontrahenci (dane do kartoteki – można poprawić przed generowaniem)</h2>
           <ContractorsTable contractors={contractors} onChange={handleContractorChange} />
           <p className="hint">
             Adres w FA(3) to dwie linie tekstu bez podziału na ulicę / numer / kod / miasto – podział jest heurystyczny,
@@ -177,7 +197,7 @@ export default function App() {
         </section>
 
         <section>
-          <h2>4. Ustawienia importu</h2>
+          <h2><span className="step-badge">4</span>Ustawienia importu</h2>
           <SettingsForm
             mode={mode}
             onModeChange={handleModeChange}
@@ -192,7 +212,7 @@ export default function App() {
         </section>
 
         <section>
-          <h2>5. Plik do RAKS</h2>
+          <h2><span className="step-badge">5</span>Plik do RAKS</h2>
           <div className="actions">
             <button type="button" disabled={!selected.length} onClick={handleGenerate}>
               Generuj plik do RAKS

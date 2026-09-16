@@ -1,5 +1,6 @@
 import type { ImportMode, ImportSettings } from "../types";
 import RatesTable from "./RatesTable";
+import Collapsible from "./Collapsible";
 import type { RateInfo, RateKey } from "../lib/rates";
 
 interface Props {
@@ -157,8 +158,7 @@ export default function SettingsForm({
         </label>
       </div>
 
-      <details style={{ marginTop: 14 }}>
-        <summary>Dekrety (opcjonalnie – domyślnie dekretacja ręczna w RAKS)</summary>
+      <Collapsible title="Dekrety (opcjonalnie – domyślnie dekretacja ręczna w RAKS)">
         <div className="row" style={{ marginTop: 8 }}>
           <label>
             Konto rozrachunkowe (MA, brutto)
@@ -192,10 +192,9 @@ export default function SettingsForm({
           niezaksięgowany) oraz zachowanie przy KONTAKT/ID nieistniejącym jeszcze w bazie (oczekiwane: dopasowanie po NIP /
           założenie kartoteki).
         </p>
-      </details>
+      </Collapsible>
 
-      <details style={{ marginTop: 14 }} open>
-        <summary>Mapowanie stawek VAT na ID_STAWKI w RAKS</summary>
+      <Collapsible title="Mapowanie stawek VAT na ID_STAWKI w RAKS" hint="23%=12, 8%=13, 5%=15">
         <RatesTable rates={rates} onChangeId={onRateIdChange} />
         <p className="hint">
           Z eksportów RAKS znane są identyfikatory 23%=12, 8%=13, 5%=15. Faktury wyłącznie zw./np. są domyślnie importowane
@@ -203,7 +202,7 @@ export default function SettingsForm({
           stawka mieszana ze zw. …) trzeba odczytać z eksportu dokumentu z taką stawką lub z dokumentacji RAKS. Faktura ze
           stawką bez ID_STAWKI zostanie oznaczona błędem i wykluczona z eksportu.
         </p>
-      </details>
+      </Collapsible>
     </>
   );
 }

@@ -16,6 +16,8 @@ rejestru itd.) – bez treści faktur.
 - React 18 + TypeScript, zbudowane Vite jako statyczna aplikacja SPA (bez SSR/API – nie są potrzebne, bo cała
   logika działa w przeglądarce).
 - Parsowanie XML: natywny `DOMParser`, porównywanie elementów po `localName` (niezależnie od przestrzeni nazw).
+- Obsługa archiwów ZIP: `fflate` (rozpakowanie w pamięci przeglądarki, bez zapisu na dysk) – KSeF eksportuje
+  paczki faktur właśnie jako ZIP po kilka/kilkanaście plików naraz, więc nie trzeba ich ręcznie rozpakowywać.
 - Testy jednostkowe: Vitest (jsdom).
 - Wdrożenie: obraz Docker wieloetapowy (build w Node, serwowanie statyki przez nginx) – jedyny sposób
   uruchomienia w produkcji, bez zależności od Node w runtime.
@@ -64,7 +66,8 @@ firm, adresy, numery kont bankowych).
 
 ## Zakres tej wersji
 
-- Wejście: pliki XML z KSeF wrzucane ręcznie (drag&drop lub wybór) – bez pobierania z API KSeF.
+- Wejście: pliki XML z KSeF wrzucane ręcznie (drag&drop lub wybór), pojedynczo lub jako archiwum `.zip` –
+  bez pobierania z API KSeF.
 - Bez generowania oznaczeń GTU / procedur – RAKS nadaje je przy księgowaniu.
 - Bez automatycznej dekretacji – dekretacja ręczna w RAKS po imporcie (opcjonalnie prosty dekret z 3 kont, gdy
   wszystkie są podane w ustawieniach).
