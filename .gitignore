@@ -1,0 +1,25 @@
+node_modules
+dist
+dist-ssr
+*.local
+*.tsbuildinfo
+
+# Pliki robocze edytora / systemu
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# Logi
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Realne, wrażliwe dane testowe (faktury, NIP-y, adresy, numery kont) –
+# używane lokalnie do weryfikacji konwertera, nigdy nie trafiają do repo.
+Pliki do testów/
+
+# Materiały źródłowe/robocze sprzed przepisania na aplikację React – nie są
+# częścią wdrażanej aplikacji.
+/ksef2raks (1).html
+/prompt_konwerter_ksef_raks.md

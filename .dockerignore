@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.gitignore
+*.md
+Pliki do testów
+ksef2raks (1).html
+prompt_konwerter_ksef_raks.md
+scripts
+.vscode
+.idea
+npm-debug.log*
