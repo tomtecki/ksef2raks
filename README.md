@@ -26,13 +26,19 @@ rejestru itd.) – bez treści faktur.
 docker compose up --build
 ```
 
-Aplikacja będzie dostępna pod adresem [http://localhost:8080](http://localhost:8080).
+Aplikacja będzie dostępna pod adresem [http://localhost:8081](http://localhost:8081).
+
+Port hosta (`8081`) można zmienić w `docker-compose.yml` (np. gdy jest już zajęty przez inną usługę) –
+sam kontener zawsze nasłuchuje wewnętrznie na porcie 8080, zmienia się tylko liczba przed dwukropkiem
+w `"8081:8080"`. Jeśli pod danym adresem widzisz inną stronę, oznacza to najczęściej, że port jest już
+zajęty przez inny kontener/usługę – sprawdź to poleceniem `docker ps` i albo zatrzymaj tamten kontener,
+albo zmień mapowanie portu tutaj.
 
 Bez docker-compose:
 
 ```bash
 docker build -t ksef2raks .
-docker run --rm -p 8080:8080 ksef2raks
+docker run --rm -p 8081:8080 ksef2raks
 ```
 
 ## Rozwój lokalny (bez Dockera)
