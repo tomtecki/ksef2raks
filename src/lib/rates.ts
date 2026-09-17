@@ -10,10 +10,18 @@ export type RateKey =
   | "zw" | "np" | "np100" | "marza" | "oss";
 
 /**
- * Stawki potwierdzone eksportami z RAKS: 23%=12, 8%=13, 5%=15.
+ * Stawki potwierdzone eksportami z RAKS: 23%=12, 8%=13, 5%=15. To wartości ze
+ * słownika stawek VAT konkretnej instalacji RAKS (Słowniki → Stawki VAT), a
+ * nie stała globalna — inna baza RAKS może mieć inne ID, dlatego mapowanie
+ * zostaje edytowalne w UI zamiast być na sztywno zaszyte.
+ *
  * Pozostałe ID nie są znane — użytkownik uzupełnia je w UI (tabela mapowania),
  * a faktura z nieuzupełnioną stawką jest blokowana do czasu uzupełnienia
- * (poza fakturami wyłącznie zw./np., patrz NOVAT_KEYS).
+ * (poza fakturami wyłącznie zw./np., patrz NOVAT_KEYS). Blokada jest celowa:
+ * wg dokumentacji KT-Soft „KT Konwerter Księgowy" (moduł eksportu RAKS
+ * Dekrety, doc.ktsoft.pl/ktkonwksieg/export_raks-dekrety.htm) RAKS przy
+ * imporcie nierozpoznanej stawki VAT nie zgłasza błędu — po prostu pomija
+ * zapis — więc walidacja po naszej stronie jest jedynym zabezpieczeniem.
  */
 export function defaultRates(): Record<RateKey, RateInfo> {
   return {

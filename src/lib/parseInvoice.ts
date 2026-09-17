@@ -60,6 +60,9 @@ export function parseInvoice(id: number, fileName: string, xmlText: string, rate
 
   const p1 = qt(fa, "P_1") || "";
   const p2 = qt(fa, "P_2") || "";
+  // Kolejność ustalania daty dostawy/sprzedaży (P_6 -> OkresFa/P_6_Do -> max FaWiersz/P_6A
+  // -> data wystawienia) zgodna z modułem importu eFaktura KSeF w KT Konwerterze Księgowym
+  // (doc.ktsoft.pl/ktkonwksieg/import_efakturaksef.htm) - niezależne potwierdzenie tej heurystyki.
   let p6 = qt(fa, "P_6") || qt(fa, "OkresFa/P_6_Do") || "";
   const wiersze = qa(fa, "FaWiersz");
   if (!p6) {

@@ -197,10 +197,13 @@ export default function SettingsForm({
       <Collapsible title="Mapowanie stawek VAT na ID_STAWKI w RAKS" hint="23%=12, 8%=13, 5%=15">
         <RatesTable rates={rates} onChangeId={onRateIdChange} />
         <p className="hint">
-          Z eksportów RAKS znane są identyfikatory 23%=12, 8%=13, 5%=15. Faktury wyłącznie zw./np. są domyślnie importowane
-          bez wpisu do rejestru VAT (tak jak w eksporcie z RAKS), więc nie potrzebują ID. Pozostałe identyfikatory (0%,
-          stawka mieszana ze zw. …) trzeba odczytać z eksportu dokumentu z taką stawką lub z dokumentacji RAKS. Faktura ze
-          stawką bez ID_STAWKI zostanie oznaczona błędem i wykluczona z eksportu.
+          Z eksportów RAKS znane są identyfikatory 23%=12, 8%=13, 5%=15 – ale to wartości ze <b>słownika stawek VAT
+          konkretnej bazy RAKS</b>, więc przed pierwszym generowaniem warto zweryfikować je we własnym RAKS
+          (Słowniki → Stawki VAT). Faktury wyłącznie zw./np. są domyślnie importowane bez wpisu do rejestru VAT (tak
+          jak w eksporcie z RAKS), więc nie potrzebują ID. Pozostałe identyfikatory (0%, stawka mieszana ze zw. …)
+          trzeba odczytać z eksportu dokumentu z taką stawką lub z dokumentacji RAKS. Faktura ze stawką bez
+          ID_STAWKI zostanie oznaczona błędem i wykluczona z eksportu – <b>celowo</b>, bo RAKS przy imporcie
+          nieznanej stawki nie zgłasza błędu, tylko po cichu pomija zapis.
         </p>
       </Collapsible>
     </>

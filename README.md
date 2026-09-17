@@ -76,6 +76,27 @@ firm, adresy, numery kont bankowych).
 
 1. Reakcja RAKS na dokument z pustą sekcją `<DEKRETY>` (czy przyjmie jako niezaksięgowany).
 2. Zachowanie przy `KONTAKT/ID` nieistniejącym jeszcze w bazie (oczekiwane: dopasowanie po NIP / założenie
-   kartoteki).
+   kartoteki). **Częściowo potwierdzone** – wg dokumentacji KT-Soft „KT Konwerter Księgowy" (moduł RAKS.SQL R3,
+   [export_raks.htm](https://doc.ktsoft.pl/ktkonwksieg/export_raks.htm)) RAKS wyszukuje kontrahenta po NIP
+   (bez myślników), a w razie braku NIP – po pełnej nazwie (dokładne dopasowanie, bez rozróżniania wielkości
+   liter).
 3. `ID_STAWKI` dla stawek 0%, np. oraz przypadków mieszanych ze zw. – potwierdzone są obecnie tylko 23%=12,
-   8%=13, 5%=15 (z rzeczywistych eksportów RAKS); pozostałe trzeba uzupełnić w tabeli mapowania stawek w UI.
+   8%=13, 5%=15 (z rzeczywistych eksportów RAKS), i **to są wartości ze słownika stawek VAT konkretnej bazy
+   RAKS, a nie stała globalna** – inna instalacja może mieć inne ID; pozostałe trzeba uzupełnić w tabeli
+   mapowania stawek w UI, sprawdzając własny RAKS (Słowniki → Stawki VAT). **Ważne** – wg dokumentacji KT-Soft
+   ([export_raks-dekrety.htm](https://doc.ktsoft.pl/ktkonwksieg/export_raks-dekrety.htm)) RAKS przy imporcie
+   nierozpoznanej stawki VAT **nie zgłasza błędu, tylko po cichu pomija zapis** – to potwierdza, że blokowanie
+   takich faktur po naszej stronie (zamiast biernego ostrzeżenia) jest właściwym, celowym zabezpieczeniem.
+
+### Czego dokumentacja KT-Soft nie zmienia, ale warto mieć na uwadze
+
+Przeglądając dokumentację komercyjnego „KT Konwerter Księgowy" (doc.ktsoft.pl/ktkonwksieg) – narzędzia, które
+też importuje faktury z KSeF do RAKS – potwierdziła ona kilka założeń tej aplikacji (patrz wyżej) i wskazała
+dwie funkcje, które robi inaczej / dodatkowo, a które świadomie zostały poza zakresem tej wersji:
+
+- **Pobieranie faktur bezpośrednio z API KSeF** (logowanie NIP-em + tokenem dostępowym, tryb interaktywny i
+  wsadowy) – u nas wejściem są tylko pliki/ZIP wrzucane ręcznie, żeby żaden token dostępowy ani dane firmy nie
+  musiały nigdzie wychodzić poza to, co użytkownik sam pobrał z KSeF.
+- **Przeliczanie walut obcych** – kurs czytany z samej faktury, a gdy go brak, dociągany z tabel NBP wg daty
+  dostawy/wystawienia. Ta aplikacja celowo tego nie robi (patrz `Waluta ≠ PLN` w sekcji Walidacja) – wymagałoby
+  to zapytania sieciowego (NBP) lub osadzenia tabel kursów w aplikacji.
